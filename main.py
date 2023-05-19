@@ -2,7 +2,7 @@
 from google.cloud import storage
 import pandas as pd
 import datetime as dt
-import time
+
 import asyncio 
 from aiohttp_ip_rotator import RotatingClientSession
 
@@ -100,7 +100,7 @@ async def fetch(df):
 if __name__ == "__main__":
     sites_file = open('sites.txt', 'r')
     files = sites_file.read().split()[0:2]
-    files_done=0
+    files_done=1
     for file in files:
             try:
 
@@ -111,17 +111,14 @@ if __name__ == "__main__":
 
                 # df.to_csv('trans_df.csv')
                 print('{} transformed to df'.format(file))
-                start = time.time()
+              
             
                 unique_digest_df = df.drop_duplicates(subset='digest')
 
                 asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
-                asyncio.run(fetch(unique_digest_df.head()))
+                asyncio.run(fetch(unique_digest_df))
                 print('{} populated...'.format(file))
-                end = time.time()
-                total_time = end - start
-                print(total_time)
-                print(end)
+
                 df['content']= df['digest'].apply(populate)
                 df.to_csv('{}.csv'.format(file))
                 pop_from_sites(file, 'sites.txt')
